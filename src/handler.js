@@ -6,14 +6,12 @@ const AWS = require("aws-sdk");
 const putMonitoring = (value, metricName, namespace, unit) => {
 	const cloudwatch = new AWS.CloudWatch();
 	const params = {
-		MetricData: [
-		{
+		MetricData: [{
 			MetricName: metricName,
 			Unit: unit,
 			Value: value,
 			StorageResolution: 60
-		},
-		],
+		}, ],
 		Namespace: namespace,
 	};
 
@@ -25,7 +23,7 @@ const getResponseLength = async (domain) => {
 		const body = await rp(domain);
 
 		return body.length;
-	}catch(e) {
+	} catch (e) {
 		return 0;
 	}
 };
@@ -37,12 +35,14 @@ const performMonitoring = async (domain, namespace) => {
 };
 
 module.exports.index = async (event, context, callback) => {
+	console.log(JSON.stringify(event, null, 4));
+
 	try {
 		const res = await Promise.all([
 			performMonitoring("https://google.com", "google"),
 		])
 		callback(null, res);
-	}catch(e) {
+	} catch (e) {
 		callback(e);
 	}
 };

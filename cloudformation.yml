@@ -1,4 +1,6 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Forked to my own repo and changed runtime to nodejs12.x
 Parameters:
   ScheduleExpression:
     Type: String
@@ -10,47 +12,47 @@ Resources:
       Handler: handler.index
       Role: !GetAtt LambdaExecutionRole.Arn
       Code: src/
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - lambda.amazonaws.com
-          Action:
-          - sts:AssumeRole
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
       Policies:
-      - PolicyName: allow-logs
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-          - Effect: Allow
-            Action:
-            - 'logs:*'
-            Resource: arn:aws:logs:*:*:*
-      - PolicyName: put-cw-data
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-          - Effect: Allow
-            Action:
-            - 'cloudwatch:PutMetricData'
-            Resource: '*'
-  ScheduledRule: 
+        - PolicyName: allow-logs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:*"
+                Resource: arn:aws:logs:*:*:*
+        - PolicyName: put-cw-data
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "cloudwatch:PutMetricData"
+                Resource: "*"
+  ScheduledRule:
     Type: AWS::Events::Rule
-    Properties: 
+    Properties:
       ScheduleExpression: !Ref ScheduleExpression
       State: "ENABLED"
-      Targets: 
+      Targets:
         - Arn: !GetAtt LambdaFunction.Arn
           Id: "TargetFunction"
-  InvokeLambdaPermission: 
+  InvokeLambdaPermission:
     Type: AWS::Lambda::Permission
-    Properties: 
+    Properties:
       FunctionName: !GetAtt LambdaFunction.Arn
       Action: "lambda:InvokeFunction"
       Principal: "events.amazonaws.com"
